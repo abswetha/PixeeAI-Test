@@ -1,3 +1,4 @@
+import io.github.pixee.security.BoundedLineReader;
 import io.github.pixee.security.ObjectInputFilters;
 import io.github.pixee.security.ZipSecurity;
 import java.io.*;
@@ -28,7 +29,7 @@ public class VulnerableSQLExample {
             connection.setRequestMethod("GET");
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                 System.out.println(line);
             }
             reader.close();
