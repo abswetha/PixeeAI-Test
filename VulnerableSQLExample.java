@@ -1,3 +1,4 @@
+import io.github.pixee.security.ObjectInputFilters;
 import java.io.*;
 import java.net.*;
 import java.sql.*;
@@ -14,6 +15,7 @@ public class VulnerableSQLExample {
         ResultSet rs = null;
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream("serializedData.ser"));
+            ObjectInputFilters.enableObjectFilterIfUnprotected(ois);
             Object obj = ois.readObject();
             System.out.println(obj.toString());
         } catch (IOException | ClassNotFoundException e) {
