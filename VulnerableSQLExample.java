@@ -11,11 +11,16 @@ public class VulnerableSQLExample {
         String username = scanner.nextLine();
         System.out.println("Enter password:");
         String password = scanner.nextLine();
+
+        Connection connection = null;
+        Statement statement = null;
+        ResultSet resultSet = null;
         try {
-            Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/mydb", "user", "pass");
-            Statement statement = connection.createStatement();           
-            String sql = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'";          
-            ResultSet resultSet = statement.executeQuery(sql);
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/mydb", "root", "password123");
+            statement = connection.createStatement();
+            String sql = "SELECT * FROM users WHERE username = '" + username + "' AND password = '" + password + "'";
+            resultSet = statement.executeQuery(sql);
+
             if (resultSet.next()) {
                 System.out.println("Login successful!");
             } else {
@@ -23,6 +28,9 @@ public class VulnerableSQLExample {
             }
         } catch (Exception e) {
             e.printStackTrace();
+        } finally {
+            if (statement != null) try { statement.close(); } catch (Exception e) {}
+            if (connection != null) try { connection.close(); } catch (Exception e) {}
         }
     }
 }
