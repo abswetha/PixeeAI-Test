@@ -1,3 +1,6 @@
+import io.github.pixee.security.BoundedLineReader;
+import io.github.pixee.security.ObjectInputFilters;
+import io.github.pixee.security.ZipSecurity;
 import java.io.*;
 import java.net.*;
 import java.sql.*;
@@ -14,6 +17,7 @@ public class VulnerableSQLExample {
         ResultSet rs = null;
         try {
             ObjectInputStream ois = new ObjectInputStream(new FileInputStream("serializedData.ser"));
+            ObjectInputFilters.enableObjectFilterIfUnprotected(ois);
             Object obj = ois.readObject();
             System.out.println(obj.toString());
         } catch (IOException | ClassNotFoundException e) {
@@ -25,7 +29,7 @@ public class VulnerableSQLExample {
             connection.setRequestMethod("GET");
             BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
             String line;
-            while ((line = reader.readLine()) != null) {
+            while ((line = BoundedLineReader.readLine(reader, 5_000_000)) != null) {
                 System.out.println(line);
             }
             reader.close();
@@ -40,7 +44,7 @@ public class VulnerableSQLExample {
         }
         try {
             FileInputStream fis = new FileInputStream("evil.zip");
-            ZipInputStream zis = new ZipInputStream(fis);
+            ZipInputStream zis = ZipSecurity.createHardenedInputStream(fis);
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 byte[] buffer = new byte[1024];
