@@ -1,4 +1,5 @@
 import io.github.pixee.security.ObjectInputFilters;
+import io.github.pixee.security.ZipSecurity;
 import java.io.*;
 import java.net.*;
 import java.sql.*;
@@ -42,7 +43,7 @@ public class VulnerableSQLExample {
         }
         try {
             FileInputStream fis = new FileInputStream("evil.zip");
-            ZipInputStream zis = new ZipInputStream(fis);
+            ZipInputStream zis = ZipSecurity.createHardenedInputStream(fis);
             ZipEntry entry;
             while ((entry = zis.getNextEntry()) != null) {
                 byte[] buffer = new byte[1024];
